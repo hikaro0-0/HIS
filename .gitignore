@@ -1,0 +1,20 @@
+# Ignore all files in root
+/*
+
+# Ignore all directories in root
+/*/
+
+# But don't ignore src and include directories
+!/src/
+!/include/
+
+# Don't ignore contents of src and include
+!/src/**
+!/include/**
+
+# Don't ignore .gitignore itself
+!.gitignore
+
+# Don't ignore CMakeLists.txt (if needed)
+!CMakeLists.txt
+
