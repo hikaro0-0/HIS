@@ -17,6 +17,27 @@ namespace {
     const ButtonColorScheme BLUE_SCHEME = {"#3498db", "#2980b9", "#21618c"};
     const ButtonColorScheme ORANGE_SCHEME = {"#f39c12", "#e67e22", "#d68910"};
     const ButtonColorScheme GRAY_SCHEME = {"#95a5a6", "#7f8c8d", "#6c7a7b"};
+    
+    struct NotificationColorScheme {
+        QString color;
+    };
+    
+    const NotificationColorScheme ERROR_NOTIFICATION = {"#e74c3c"};
+    const NotificationColorScheme SUCCESS_NOTIFICATION = {"#27ae60"};
+    
+    QString buildNotificationStyle(const NotificationColorScheme& scheme) {
+        return QString("QLabel {"
+            "    background-color: white;"
+            "    color: %1;"
+            "    padding: 15px 20px;"
+            "    border-radius: 8px;"
+            "    border: 2px solid %1;"
+            "    font-size: 12pt;"
+            "    font-weight: bold;"
+            "    min-width: 300px;"
+            "    max-width: 500px;"
+            "}").arg(scheme.color);
+    }
 }
 
 static QString buildButtonStyle(const ButtonStyleParams& params) {
@@ -52,7 +73,7 @@ static QString buildButtonStyle(const ButtonStyleParams& params) {
 }
 
 namespace {
-    static QString buildSmallButtonStyle(const ButtonColorScheme& scheme) {
+    QString buildSmallButtonStyle(const ButtonColorScheme& scheme) {
         return buildButtonStyle(ButtonStyleParams(scheme.normal, scheme.hover, scheme.pressed, 
                                                    SMALL_BUTTON_FONT_SIZE, SMALL_BUTTON_PADDING, SMALL_BUTTON_BORDER_RADIUS));
     }
@@ -60,22 +81,9 @@ namespace {
 
 void UIHelpers::showNotification(QWidget* parent, const QString& message, bool isError, int timeoutMs) {
     QLabel* notification = new QLabel(message, parent);
-    QString borderColor = isError ? "#e74c3c" : "#27ae60";
-    QString textColor = isError ? "#e74c3c" : "#27ae60";
+    const NotificationColorScheme& scheme = isError ? ERROR_NOTIFICATION : SUCCESS_NOTIFICATION;
     
-    notification->setStyleSheet(
-        QString("QLabel {"
-        "    background-color: white;"
-        "    color: %1;"
-        "    padding: 15px 20px;"
-        "    border-radius: 8px;"
-        "    border: 2px solid %2;"
-        "    font-size: 12pt;"
-        "    font-weight: bold;"
-        "    min-width: 300px;"
-        "    max-width: 500px;"
-        "}").arg(textColor, borderColor)
-    );
+    notification->setStyleSheet(buildNotificationStyle(scheme));
     notification->setWordWrap(true);
     notification->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     notification->setAttribute(Qt::WA_DeleteOnClose);
