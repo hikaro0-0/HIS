@@ -1,6 +1,7 @@
 #include "C:/Users/User/Desktop/HIS/include/WelcomeWindow.h"
 #include "C:/Users/User/Desktop/HIS/include/MainWindow.h"
 #include "C:/Users/User/Desktop/HIS/include/exceptions.h"
+#include "C:/Users/User/Desktop/HIS/include/UIHelpers.h"
 #include <C:/Qt/6.10.1/msvc2022_64/include/QtWidgets/QApplication>
 #include <C:/Qt/6.10.1/msvc2022_64/include/QtWidgets/QFrame>
 #include <C:/Qt/6.10.1/msvc2022_64/include/QtWidgets/QGridLayout>
@@ -54,12 +55,7 @@ void WelcomeWindow::setupUI() {
     setMinimumSize(1000, 600);
     resize(1100, 700);
     
-    setStyleSheet(
-        "QDialog {"
-        "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, "
-        "        stop:0 #f8f9fa, stop:1 #e9ecef);"
-        "}"
-    );
+    setStyleSheet("QDialog { " + UIHelpers::getBackgroundGradientStyle() + " }");
     
     QVBoxLayout* mainLayout = new QVBoxLayout(this);
     mainLayout->setSpacing(0);
@@ -104,25 +100,7 @@ void WelcomeWindow::setupUI() {
     footerLayout->addWidget(featuresLabel, 1);
     
     enterButton = new QPushButton("Войти в систему", footerWidget);
-    enterButton->setStyleSheet(
-        "QPushButton {"
-        "    background-color: #27ae60;"
-        "    color: white;"
-        "    font-size: 12pt;"
-        "    font-weight: bold;"
-        "    padding: 10px 30px;"
-        "    border: none;"
-        "    border-radius: 6px;"
-        "    min-width: 150px;"
-        "    min-height: 35px;"
-        "}"
-        "QPushButton:hover {"
-        "    background-color: #229954;"
-        "}"
-        "QPushButton:pressed {"
-        "    background-color: #1e8449;"
-        "}"
-    );
+    enterButton->setStyleSheet(UIHelpers::getGreenButtonStyle());
     enterButton->setCursor(Qt::PointingHandCursor);
     connect(enterButton, &QPushButton::clicked, this, &WelcomeWindow::onEnterSystem);
     
@@ -416,62 +394,10 @@ void WelcomeWindow::onBookRoom(RoomType roomType) {
             }
         }
         catch (const BookingException& e) {
-            QLabel* notification = new QLabel(
-                QString("Ошибка бронирования: %1").arg(e.what()), this);
-            notification->setStyleSheet(
-                "QLabel {"
-                "    background-color: white;"
-                "    color: #e74c3c;"
-                "    padding: 15px 20px;"
-                "    border-radius: 8px;"
-                "    border: 2px solid #e74c3c;"
-                "    font-size: 12pt;"
-                "    font-weight: bold;"
-                "    min-width: 300px;"
-                "    max-width: 500px;"
-                "}"
-            );
-            notification->setWordWrap(true);
-            notification->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-            notification->setAttribute(Qt::WA_DeleteOnClose);
-            notification->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
-            notification->setAttribute(Qt::WA_TranslucentBackground);
-            
-            QPoint pos = mapToGlobal(QPoint(20, height() - notification->sizeHint().height() - 40));
-            notification->move(pos);
-            notification->resize(330, notification->sizeHint().height());
-            notification->show();
-            
-            QTimer::singleShot(4000, notification, &QLabel::close);
+            UIHelpers::showNotification(this, QString("Ошибка бронирования: %1").arg(e.what()), true);
         }
         catch (const std::exception& e) {
-            QLabel* notification = new QLabel(
-                QString("Ошибка: %1").arg(e.what()), this);
-            notification->setStyleSheet(
-                "QLabel {"
-                "    background-color: white;"
-                "    color: #e74c3c;"
-                "    padding: 15px 20px;"
-                "    border-radius: 8px;"
-                "    border: 2px solid #e74c3c;"
-                "    font-size: 12pt;"
-                "    font-weight: bold;"
-                "    min-width: 300px;"
-                "    max-width: 500px;"
-                "}"
-            );
-            notification->setWordWrap(true);
-            notification->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-            notification->setAttribute(Qt::WA_DeleteOnClose);
-            notification->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
-            notification->setAttribute(Qt::WA_TranslucentBackground);
-            
-            QPoint pos = mapToGlobal(QPoint(20, height() - notification->sizeHint().height() - 40));
-            notification->move(pos);
-            notification->resize(330, notification->sizeHint().height());
-            notification->show();
-            
-            QTimer::singleShot(4000, notification, &QLabel::close);
+            UIHelpers::showNotification(this, QString("Ошибка: %1").arg(e.what()), true);
         }
     }
 }

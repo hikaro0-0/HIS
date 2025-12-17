@@ -6,6 +6,7 @@
 #include "C:/Users/User/Desktop/HIS/include/WelcomeWindow.h"
 #include "C:/Users/User/Desktop/HIS/include/RoomSearchDialog.h"
 #include "C:/Users/User/Desktop/HIS/include/RoomUtils.h"
+#include "C:/Users/User/Desktop/HIS/include/UIHelpers.h"
 #include <C:/Qt/6.10.1/msvc2022_64/include/QtWidgets/QHeaderView>
 #include <C:/Qt/6.10.1/msvc2022_64/include/QtWidgets/QFileDialog>
 #include <C:/Qt/6.10.1/msvc2022_64/include/QtWidgets/QMessageBox>
@@ -68,12 +69,7 @@ void MainWindow::setupUI() {
     setMinimumSize(1400, 900);
     resize(1400, 900);
     
-    setStyleSheet(
-        "QMainWindow {"
-        "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, "
-        "        stop:0 #f8f9fa, stop:1 #e9ecef);"
-        "}"
-    );
+    setStyleSheet("QMainWindow { " + UIHelpers::getBackgroundGradientStyle() + " }");
 
     QWidget* centralWidget = new QWidget(this);
     centralWidget->setStyleSheet("QWidget { background: transparent; }");
@@ -86,23 +82,7 @@ void MainWindow::setupUI() {
     QVBoxLayout* leftLayout = new QVBoxLayout();
 
     QGroupBox* roomGroup = new QGroupBox("Список номеров", this);
-    roomGroup->setStyleSheet(
-        "QGroupBox {"
-        "    background: white;"
-        "    border-radius: 12px;"
-        "    border: 1px solid #dee2e6;"
-        "    font-weight: bold;"
-        "    font-size: 14pt;"
-        "    padding-top: 15px;"
-        "    margin-top: 10px;"
-        "}"
-        "QGroupBox::title {"
-        "    subcontrol-origin: margin;"
-        "    left: 15px;"
-        "    padding: 0 5px;"
-        "    color: #212529;"
-        "}"
-    );
+    roomGroup->setStyleSheet(UIHelpers::getGroupBoxStyle());
     QVBoxLayout* roomLayout = new QVBoxLayout(roomGroup);
     roomLayout->setSpacing(10);
     roomLayout->setContentsMargins(15, 20, 15, 15);
@@ -211,24 +191,7 @@ void MainWindow::setupUI() {
     leftLayout->addWidget(roomGroup);
     
     clearButton = new QPushButton("Очистить данные", this);
-    clearButton->setStyleSheet(
-        "QPushButton {"
-        "    background-color: #e74c3c;"
-        "    color: white;"
-        "    font-weight: bold;"
-        "    font-size: 9pt;"
-        "    padding: 6px 14px;"
-        "    border: none;"
-        "    border-radius: 4px;"
-        "    min-width: 90px;"
-        "}"
-        "QPushButton:hover {"
-        "    background-color: #c0392b;"
-        "}"
-        "QPushButton:pressed {"
-        "    background-color: #a93226;"
-        "}"
-    );
+    clearButton->setStyleSheet(UIHelpers::getRedButtonStyle());
     clearButton->setCursor(Qt::PointingHandCursor);
     connect(clearButton, &QPushButton::clicked, this, &MainWindow::onClearData);
     
@@ -237,23 +200,7 @@ void MainWindow::setupUI() {
     QVBoxLayout* rightLayout = new QVBoxLayout();
 
     QGroupBox* statsGroup = new QGroupBox("Статистика", this);
-    statsGroup->setStyleSheet(
-        "QGroupBox {"
-        "    background: white;"
-        "    border-radius: 12px;"
-        "    border: 1px solid #dee2e6;"
-        "    font-weight: bold;"
-        "    font-size: 14pt;"
-        "    padding-top: 15px;"
-        "    margin-top: 10px;"
-        "}"
-        "QGroupBox::title {"
-        "    subcontrol-origin: margin;"
-        "    left: 15px;"
-        "    padding: 0 5px;"
-        "    color: #212529;"
-        "}"
-    );
+    statsGroup->setStyleSheet(UIHelpers::getGroupBoxStyle());
     QVBoxLayout* statsLayout = new QVBoxLayout(statsGroup);
     statsLayout->setContentsMargins(15, 20, 15, 15);
 
@@ -289,25 +236,7 @@ void MainWindow::setupUI() {
     rightLayout->addStretch();
     
     bookRoomButton = new QPushButton("Забронировать номер", this);
-    bookRoomButton->setStyleSheet(
-        "QPushButton {"
-        "    background-color: #27ae60;"
-        "    color: white;"
-        "    font-size: 12pt;"
-        "    font-weight: bold;"
-        "    padding: 10px 30px;"
-        "    border: none;"
-        "    border-radius: 6px;"
-        "    min-width: 150px;"
-        "    min-height: 35px;"
-        "}"
-        "QPushButton:hover {"
-        "    background-color: #229954;"
-        "}"
-        "QPushButton:pressed {"
-        "    background-color: #1e8449;"
-        "}"
-    );
+    bookRoomButton->setStyleSheet(UIHelpers::getGreenButtonStyle());
     bookRoomButton->setCursor(Qt::PointingHandCursor);
     connect(bookRoomButton, &QPushButton::clicked, this, &MainWindow::onBookRoom);
     
@@ -365,23 +294,7 @@ QWidget* MainWindow::createActionsWidget(const Room* room) {
     int roomNumber = room->getRoomNumber();
     
     QPushButton* detailsBtn = new QPushButton("Детали", actionsWidget);
-        detailsBtn->setStyleSheet(
-            "QPushButton {"
-            "    background-color: #95a5a6;"
-            "    color: white;"
-            "    font-size: 8pt;"
-            "    font-weight: bold;"
-            "    padding: 4px 10px;"
-            "    border: none;"
-            "    border-radius: 3px;"
-            "}"
-            "QPushButton:hover {"
-            "    background-color: #7f8c8d;"
-            "}"
-            "QPushButton:pressed {"
-            "    background-color: #6c7a7b;"
-            "}"
-        );
+    detailsBtn->setStyleSheet(UIHelpers::getGraySmallButtonStyle());
         detailsBtn->setCursor(Qt::PointingHandCursor);
     connect(detailsBtn, &QPushButton::clicked, [this, roomNumber]() {
         const Room* room = hotelSystem->findRoom(roomNumber);
@@ -394,23 +307,7 @@ QWidget* MainWindow::createActionsWidget(const Room* room) {
     switch (room->getStatus()) {
     case RoomStatus::AVAILABLE: {
         QPushButton* bookBtn = new QPushButton("Забронировать", actionsWidget);
-        bookBtn->setStyleSheet(
-            "QPushButton {"
-            "    background-color: #27ae60;"
-            "    color: white;"
-            "    font-size: 8pt;"
-            "    font-weight: bold;"
-            "    padding: 4px 10px;"
-            "    border: none;"
-            "    border-radius: 3px;"
-            "}"
-            "QPushButton:hover {"
-            "    background-color: #229954;"
-            "}"
-            "QPushButton:pressed {"
-            "    background-color: #1e8449;"
-            "}"
-        );
+        bookBtn->setStyleSheet(UIHelpers::getGreenSmallButtonStyle());
         bookBtn->setCursor(Qt::PointingHandCursor);
         connect(bookBtn, &QPushButton::clicked, [this, roomNumber]() {
             const Room* room = hotelSystem->findRoom(roomNumber);
@@ -430,23 +327,7 @@ QWidget* MainWindow::createActionsWidget(const Room* room) {
     }
     case RoomStatus::BOOKED: {
         QPushButton* checkInBtn = new QPushButton("Заселить", actionsWidget);
-        checkInBtn->setStyleSheet(
-            "QPushButton {"
-            "    background-color: #3498db;"
-            "    color: white;"
-            "    font-size: 8pt;"
-            "    font-weight: bold;"
-            "    padding: 4px 10px;"
-            "    border: none;"
-            "    border-radius: 3px;"
-            "}"
-            "QPushButton:hover {"
-            "    background-color: #2980b9;"
-            "}"
-            "QPushButton:pressed {"
-            "    background-color: #21618c;"
-            "}"
-        );
+        checkInBtn->setStyleSheet(UIHelpers::getBlueSmallButtonStyle());
         checkInBtn->setCursor(Qt::PointingHandCursor);
         connect(checkInBtn, &QPushButton::clicked, [this, roomNumber]() {
             const Room* room = hotelSystem->findRoom(roomNumber);
@@ -464,23 +345,7 @@ QWidget* MainWindow::createActionsWidget(const Room* room) {
         actionsLayout->addWidget(checkInBtn);
         
         QPushButton* cancelBtn = new QPushButton("Отменить", actionsWidget);
-        cancelBtn->setStyleSheet(
-            "QPushButton {"
-            "    background-color: #e74c3c;"
-            "    color: white;"
-            "    font-size: 8pt;"
-            "    font-weight: bold;"
-            "    padding: 4px 10px;"
-            "    border: none;"
-            "    border-radius: 3px;"
-            "}"
-            "QPushButton:hover {"
-            "    background-color: #c0392b;"
-            "}"
-            "QPushButton:pressed {"
-            "    background-color: #a93226;"
-            "}"
-        );
+        cancelBtn->setStyleSheet(UIHelpers::getRedSmallButtonStyle());
         cancelBtn->setCursor(Qt::PointingHandCursor);
         connect(cancelBtn, &QPushButton::clicked, [this, roomNumber]() {
             const Room* room = hotelSystem->findRoom(roomNumber);
@@ -721,25 +586,7 @@ void MainWindow::showRoomDetailsDialog(const Room* room) {
     layout->addWidget(infoText);
 
     QPushButton* closeButton = new QPushButton("Закрыть", dialog);
-    closeButton->setStyleSheet(
-        "QPushButton {"
-        "    background-color: #27ae60;"
-        "    color: white;"
-        "    font-weight: bold;"
-        "    font-size: 12pt;"
-        "    padding: 10px 30px;"
-        "    border: none;"
-        "    border-radius: 6px;"
-        "    min-width: 150px;"
-        "    min-height: 35px;"
-        "}"
-        "QPushButton:hover {"
-        "    background-color: #229954;"
-        "}"
-        "QPushButton:pressed {"
-        "    background-color: #1e8449;"
-        "}"
-    );
+    closeButton->setStyleSheet(UIHelpers::getGreenButtonStyle());
     closeButton->setCursor(Qt::PointingHandCursor);
     connect(closeButton, &QPushButton::clicked, dialog, &QDialog::accept);
     layout->addWidget(closeButton);
@@ -771,61 +618,11 @@ void MainWindow::onSearchRooms() {
 }
 
 void MainWindow::showError(const QString& message) {
-    QLabel* notification = new QLabel(message, this);
-    notification->setStyleSheet(
-        "QLabel {"
-        "    background-color: white;"
-        "    color: #e74c3c;"
-        "    padding: 15px 20px;"
-        "    border-radius: 8px;"
-        "    border: 2px solid #e74c3c;"
-        "    font-size: 12pt;"
-        "    font-weight: bold;"
-        "    min-width: 300px;"
-        "    max-width: 500px;"
-        "}"
-    );
-    notification->setWordWrap(true);
-    notification->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    notification->setAttribute(Qt::WA_DeleteOnClose);
-    notification->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
-    notification->setAttribute(Qt::WA_TranslucentBackground);
-    
-    QPoint pos = mapToGlobal(QPoint(20, height() - notification->sizeHint().height() - 40));
-    notification->move(pos);
-    notification->resize(330, notification->sizeHint().height());
-    notification->show();
-    
-    QTimer::singleShot(4000, notification, &QLabel::close);
+    UIHelpers::showNotification(this, message, true, 4000);
 }
 
 void MainWindow::showSuccess(const QString& message) {
-    QLabel* notification = new QLabel(message, this);
-    notification->setStyleSheet(
-        "QLabel {"
-        "    background-color: white;"
-        "    color: #27ae60;"
-        "    padding: 15px 20px;"
-        "    border-radius: 8px;"
-        "    border: 2px solid #27ae60;"
-        "    font-size: 12pt;"
-        "    font-weight: bold;"
-        "    min-width: 300px;"
-        "    max-width: 500px;"
-        "}"
-    );
-    notification->setWordWrap(true);
-    notification->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    notification->setAttribute(Qt::WA_DeleteOnClose);
-    notification->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
-    notification->setAttribute(Qt::WA_TranslucentBackground);
-    
-    QPoint pos = mapToGlobal(QPoint(20, height() - notification->sizeHint().height() - 40));
-    notification->move(pos);
-    notification->resize(330, notification->sizeHint().height());
-    notification->show();
-    
-    QTimer::singleShot(3000, notification, &QLabel::close);
+    UIHelpers::showNotification(this, message, false, 3000);
 }
 
 void MainWindow::onBookRoom() {

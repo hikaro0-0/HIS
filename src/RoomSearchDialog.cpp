@@ -2,6 +2,7 @@
 #include "C:/Users/User/Desktop/HIS/include/DeluxeRoom.h"
 #include "C:/Users/User/Desktop/HIS/include/SuiteRoom.h"
 #include "C:/Users/User/Desktop/HIS/include/RoomUtils.h"
+#include "C:/Users/User/Desktop/HIS/include/UIHelpers.h"
 #include <C:/Qt/6.10.1/msvc2022_64/include/QtWidgets/QHeaderView>
 #include <C:/Qt/6.10.1/msvc2022_64/include/QtGui/QColor>
 
@@ -20,12 +21,7 @@ RoomSearchDialog::~RoomSearchDialog() {
 }
 
 void RoomSearchDialog::setupUI() {
-    setStyleSheet(
-        "QDialog {"
-        "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, "
-        "        stop:0 #f8f9fa, stop:1 #e9ecef);"
-        "}"
-    );
+    setStyleSheet("QDialog { " + UIHelpers::getBackgroundGradientStyle() + " }");
     
     QVBoxLayout* mainLayout = new QVBoxLayout(this);
     mainLayout->setSpacing(0);
@@ -38,23 +34,7 @@ void RoomSearchDialog::setupUI() {
     contentLayout->setContentsMargins(25, 25, 25, 25);
     
     QGroupBox* searchGroup = new QGroupBox("Критерии поиска", this);
-    searchGroup->setStyleSheet(
-        "QGroupBox {"
-        "    background: white;"
-        "    border-radius: 12px;"
-        "    border: 1px solid #dee2e6;"
-        "    font-weight: bold;"
-        "    font-size: 14pt;"
-        "    padding-top: 15px;"
-        "    margin-top: 10px;"
-        "}"
-        "QGroupBox::title {"
-        "    subcontrol-origin: margin;"
-        "    left: 15px;"
-        "    padding: 0 5px;"
-        "    color: #212529;"
-        "}"
-    );
+    searchGroup->setStyleSheet(UIHelpers::getGroupBoxStyle());
     QVBoxLayout* searchLayout = new QVBoxLayout();
     searchLayout->setSpacing(10);
     searchLayout->setContentsMargins(15, 20, 15, 15);
@@ -155,24 +135,7 @@ void RoomSearchDialog::setupUI() {
     priceLayout->addStretch();
     
     clearSearchButton = new QPushButton("Очистить поиск", this);
-    clearSearchButton->setStyleSheet(
-        "QPushButton {"
-        "    background-color: #95a5a6;"
-        "    color: white;"
-        "    font-size: 9pt;"
-        "    font-weight: bold;"
-        "    padding: 6px 14px;"
-        "    border: none;"
-        "    border-radius: 4px;"
-        "    min-width: 90px;"
-        "}"
-        "QPushButton:hover {"
-        "    background-color: #7f8c8d;"
-        "}"
-        "QPushButton:pressed {"
-        "    background-color: #6c7a7b;"
-        "}"
-    );
+    clearSearchButton->setStyleSheet(UIHelpers::getGrayButtonStyle());
     clearSearchButton->setCursor(Qt::PointingHandCursor);
     
     searchLayout->addWidget(searchWiFiCheckBox);
@@ -187,23 +150,7 @@ void RoomSearchDialog::setupUI() {
     contentLayout->addWidget(searchGroup);
     
     QGroupBox* resultsGroup = new QGroupBox("Результаты поиска", this);
-    resultsGroup->setStyleSheet(
-        "QGroupBox {"
-        "    background: white;"
-        "    border-radius: 12px;"
-        "    border: 1px solid #dee2e6;"
-        "    font-weight: bold;"
-        "    font-size: 14pt;"
-        "    padding-top: 15px;"
-        "    margin-top: 10px;"
-        "}"
-        "QGroupBox::title {"
-        "    subcontrol-origin: margin;"
-        "    left: 15px;"
-        "    padding: 0 5px;"
-        "    color: #212529;"
-        "}"
-    );
+    resultsGroup->setStyleSheet(UIHelpers::getGroupBoxStyle());
     QVBoxLayout* resultsGroupLayout = new QVBoxLayout();
     resultsGroupLayout->setContentsMargins(15, 20, 15, 15);
     
@@ -263,25 +210,7 @@ void RoomSearchDialog::setupUI() {
     footerLayout->addStretch();
     
     QPushButton* closeButton = new QPushButton("Закрыть", footerWidget);
-    closeButton->setStyleSheet(
-        "QPushButton {"
-        "    background-color: #27ae60;"
-        "    color: white;"
-        "    font-size: 12pt;"
-        "    font-weight: bold;"
-        "    padding: 10px 30px;"
-        "    border: none;"
-        "    border-radius: 6px;"
-        "    min-width: 150px;"
-        "    min-height: 35px;"
-        "}"
-        "QPushButton:hover {"
-        "    background-color: #229954;"
-        "}"
-        "QPushButton:pressed {"
-        "    background-color: #1e8449;"
-        "}"
-    );
+    closeButton->setStyleSheet(UIHelpers::getGreenButtonStyle());
     closeButton->setCursor(Qt::PointingHandCursor);
     connect(closeButton, &QPushButton::clicked, this, &QDialog::accept);
     footerLayout->addWidget(closeButton);
