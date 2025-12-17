@@ -13,5 +13,6 @@
 # Don't ignore .gitignore itself
 !.gitignore
 
-# Ignore build output directory
+# Ignore build output directories
+build/
 out/build/debug/
