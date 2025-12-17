@@ -26,7 +26,7 @@ class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
-    MainWindow(QWidget* parent = nullptr, HotelSystem* sharedSystem = nullptr);
+   explicit MainWindow(QWidget* parent = nullptr, HotelSystem* sharedSystem = nullptr);
     ~MainWindow();
 
 private slots:
