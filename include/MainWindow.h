@@ -54,6 +54,7 @@ private:
     void showSuccess(const QString& message);
     int getSelectedRoomNumber() const;
     QWidget* createActionsWidget(const Room* room);
+    void addRoomRowToTable(const Room* room, const QColor& backgroundColor);
 
     HotelSystem* hotelSystem;
     bool ownsHotelSystem;

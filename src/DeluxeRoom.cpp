@@ -1,4 +1,5 @@
 #include "C:/Users/User/Desktop/HIS/include/DeluxeRoom.h"
+#include "C:/Users/User/Desktop/HIS/include/RoomUtils.h"
 #include <iostream>
 #include <iomanip>
 
@@ -8,35 +9,11 @@ DeluxeRoom::DeluxeRoom(int number, double price, int beds, bool wifi, bool miniB
 }
 
 double DeluxeRoom::calculateTotalPrice(int days) const {
-    if (days < 1) {
-        throw std::invalid_argument("Number of days must be positive");
-    }
-    return pricePerDay * days;
+    return RoomUtils::calculateBasicTotalPrice(this, days);
 }
 
 void DeluxeRoom::displayInfo() const {
-    std::cout << "\n=== Deluxe Room ===" << std::endl;
-    std::cout << "Room number: " << roomNumber << std::endl;
-    std::cout << "Price per day: $" << std::fixed << std::setprecision(2) << pricePerDay << std::endl;
-    std::cout << "Number of beds: " << bedCount << std::endl;
-    std::cout << "Number of rooms: " << roomCount << std::endl;
-    std::cout << "Mini-bar: " << (hasMiniBar ? "Yes" : "No") << std::endl;
-    std::cout << "Balcony: " << (hasBalcony ? "Yes" : "No") << std::endl;
-    std::cout << "Status: " << getStatusString() << std::endl;
-    if (status != RoomStatus::AVAILABLE) {
-        if (const Guest* guest = getGuest()) {
-            std::cout << "Guest: " << guest->toContactString() << std::endl;
-        }
-        if (bookingTime > 0) {
-            std::cout << "Booked at: " << getBookingTimeString() << std::endl;
-        }
-        if (checkInTime > 0) {
-            std::cout << "Checked in at: " << getCheckInTimeString() << std::endl;
-        }
-        if (checkOutTime > 0) {
-            std::cout << "Checked out at: " << getCheckOutTimeString() << std::endl;
-        }
-    }
+    RoomUtils::displayRoomCommonInfo(this, "Deluxe Room", true, true, false);
 }
 
 std::string DeluxeRoom::getRoomType() const {

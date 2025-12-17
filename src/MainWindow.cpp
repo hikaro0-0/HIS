@@ -5,6 +5,7 @@
 #include "C:/Users/User/Desktop/HIS/include/SuiteRoom.h"
 #include "C:/Users/User/Desktop/HIS/include/WelcomeWindow.h"
 #include "C:/Users/User/Desktop/HIS/include/RoomSearchDialog.h"
+#include "C:/Users/User/Desktop/HIS/include/RoomUtils.h"
 #include <C:/Qt/6.10.1/msvc2022_64/include/QtWidgets/QHeaderView>
 #include <C:/Qt/6.10.1/msvc2022_64/include/QtWidgets/QFileDialog>
 #include <C:/Qt/6.10.1/msvc2022_64/include/QtWidgets/QMessageBox>
@@ -316,6 +317,45 @@ void MainWindow::setupUI() {
     mainLayout->addLayout(rightLayout, 1);
 }
 
+void MainWindow::addRoomRowToTable(const Room* room, const QColor& backgroundColor) {
+    int row = roomTable->rowCount();
+    roomTable->insertRow(row);
+    roomTable->setVerticalHeaderItem(row, new QTableWidgetItem(QString::number(room->getRoomNumber())));
+
+    QTableWidgetItem* item0 = new QTableWidgetItem(getRoomTypeString(room));
+    item0->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    item0->setToolTip(getRoomTypeString(room));
+    roomTable->setItem(row, 0, item0);
+    
+    QTableWidgetItem* item1 = new QTableWidgetItem(getStatusString(room->getStatus()));
+    item1->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    roomTable->setItem(row, 1, item1);
+    
+    const Guest* guest = room->getGuest();
+    QString guestName = guest ? QString::fromStdString(guest->toShortString()) : "-";
+    QTableWidgetItem* item2 = new QTableWidgetItem(guestName);
+    item2->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    item2->setToolTip(guestName);
+    roomTable->setItem(row, 2, item2);
+    
+    QTableWidgetItem* item3 = new QTableWidgetItem("$" + QString::number(static_cast<int>(room->getPricePerDay())));
+    item3->setTextAlignment(Qt::AlignCenter);
+    roomTable->setItem(row, 3, item3);
+    
+    QTableWidgetItem* item4 = new QTableWidgetItem(QString::number(room->getBedCount()));
+    item4->setTextAlignment(Qt::AlignCenter);
+    roomTable->setItem(row, 4, item4);
+
+    QWidget* actionsWidget = createActionsWidget(room);
+    roomTable->setCellWidget(row, 5, actionsWidget);
+
+    for (int col = 0; col < 5; ++col) {
+        if (QTableWidgetItem* item = roomTable->item(row, col)) {
+            item->setBackground(backgroundColor);
+        }
+    }
+}
+
 QWidget* MainWindow::createActionsWidget(const Room* room) {
     QWidget* actionsWidget = new QWidget();
     QHBoxLayout* actionsLayout = new QHBoxLayout(actionsWidget);
@@ -512,37 +552,6 @@ void MainWindow::updateRoomTable() {
             continue;
         }
         
-        int row = roomTable->rowCount();
-        roomTable->insertRow(row);
-        roomTable->setVerticalHeaderItem(row, new QTableWidgetItem(QString::number(room->getRoomNumber())));
-
-        QTableWidgetItem* item0 = new QTableWidgetItem(getRoomTypeString(room));
-        item0->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        item0->setToolTip(getRoomTypeString(room));
-        roomTable->setItem(row, 0, item0);
-        
-        QTableWidgetItem* item1 = new QTableWidgetItem(getStatusString(room->getStatus()));
-        item1->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        roomTable->setItem(row, 1, item1);
-        
-        const Guest* guest = room->getGuest();
-        QString guestName = guest ? QString::fromStdString(guest->toShortString()) : "-";
-        QTableWidgetItem* item2 = new QTableWidgetItem(guestName);
-        item2->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        item2->setToolTip(guestName);
-        roomTable->setItem(row, 2, item2);
-        
-        QTableWidgetItem* item3 = new QTableWidgetItem("$" + QString::number(static_cast<int>(room->getPricePerDay())));
-        item3->setTextAlignment(Qt::AlignCenter);
-        roomTable->setItem(row, 3, item3);
-        
-        QTableWidgetItem* item4 = new QTableWidgetItem(QString::number(room->getBedCount()));
-        item4->setTextAlignment(Qt::AlignCenter);
-        roomTable->setItem(row, 4, item4);
-
-        QWidget* actionsWidget = createActionsWidget(room);
-        roomTable->setCellWidget(row, 5, actionsWidget);
-
         QColor color;
         switch (room->getStatus()) {
         case RoomStatus::AVAILABLE:
@@ -558,12 +567,7 @@ void MainWindow::updateRoomTable() {
             color = QColor(235, 235, 235);
             break;
         }
-
-        for (int col = 0; col < 5; ++col) {
-            if (QTableWidgetItem* item = roomTable->item(row, col)) {
-                item->setBackground(color);
-            }
-        }
+        addRoomRowToTable(room, color);
     }
 }
 
@@ -604,60 +608,11 @@ void MainWindow::updateStatistics() {
 }
 
 QString MainWindow::getStatusString(RoomStatus status) const {
-    switch (status) {
-    case RoomStatus::AVAILABLE:
-        return "Доступен";
-    case RoomStatus::BOOKED:
-        return "Забронирован";
-    case RoomStatus::OCCUPIED:
-        return "Занят";
-    default:
-        return "Неизвестно";
-    }
+    return QString::fromStdString(RoomUtils::getStatusString(status));
 }
 
 QString MainWindow::getRoomTypeString(const Room* room) const {
-    if (!room) return "Неизвестно";
-    
-    int beds = room->getBedCount();
-    
-    bool hasMiniBar = false;
-    bool hasBalcony = false;
-    bool hasJacuzzi = false;
-    
-    if (auto dr = dynamic_cast<const DeluxeRoom*>(room)) {
-        hasMiniBar = dr->getHasMiniBar();
-        hasBalcony = dr->getHasBalcony();
-    }
-    
-    if (auto sr = dynamic_cast<const SuiteRoom*>(room)) {
-        hasMiniBar = sr->getHasMiniBar();
-        hasBalcony = sr->getHasBalcony();
-        hasJacuzzi = sr->getHasJacuzzi();
-    }
-    
-    if (beds == 4) {
-        return "8-местный";
-    } else if (beds == 3) {
-        return "6-местный";
-    } else if (beds == 2 && !hasMiniBar && !hasBalcony) {
-        return "4-местный женский";
-    } else if (beds == 1 && !hasMiniBar && !hasBalcony) {
-        return "Твин Джуниор";
-    } else if (beds == 1 && hasMiniBar && hasBalcony && !hasJacuzzi) {
-        double price = room->getPricePerDay();
-        if (price <= 25) {
-            return "Двухместный Эконом";
-        } else if (price <= 28) {
-            return "Loft Double";
-        } else {
-            return "Стандартный Дабл";
-        }
-    } else if (beds == 2 && hasMiniBar && hasBalcony && hasJacuzzi) {
-        return "Семейный";
-    }
-    
-    return QString::fromStdString(room->getRoomType());
+    return QString::fromStdString(RoomUtils::getRoomTypeString(room));
 }
 
 void MainWindow::showRoomDetailsDialog(const Room* room) {
@@ -994,42 +949,7 @@ void MainWindow::onDisplayBookedRooms() {
     auto bookedRooms = hotelSystem->findRoomsByStatus(RoomStatus::BOOKED);
 
     for (const Room* room : bookedRooms) {
-        int row = roomTable->rowCount();
-        roomTable->insertRow(row);
-        roomTable->setVerticalHeaderItem(row, new QTableWidgetItem(QString::number(room->getRoomNumber())));
-
-        QTableWidgetItem* item0 = new QTableWidgetItem(getRoomTypeString(room));
-        item0->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        item0->setToolTip(getRoomTypeString(room));
-        roomTable->setItem(row, 0, item0);
-        
-        QTableWidgetItem* item1 = new QTableWidgetItem(getStatusString(room->getStatus()));
-        item1->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        roomTable->setItem(row, 1, item1);
-        
-        const Guest* guest = room->getGuest();
-        QString guestName = guest ? QString::fromStdString(guest->toShortString()) : "-";
-        QTableWidgetItem* item2 = new QTableWidgetItem(guestName);
-        item2->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        item2->setToolTip(guestName);
-        roomTable->setItem(row, 2, item2);
-        
-        QTableWidgetItem* item3 = new QTableWidgetItem("$" + QString::number(static_cast<int>(room->getPricePerDay())));
-        item3->setTextAlignment(Qt::AlignCenter);
-        roomTable->setItem(row, 3, item3);
-        
-        QTableWidgetItem* item4 = new QTableWidgetItem(QString::number(room->getBedCount()));
-        item4->setTextAlignment(Qt::AlignCenter);
-        roomTable->setItem(row, 4, item4);
-
-        QWidget* actionsWidget = createActionsWidget(room);
-        roomTable->setCellWidget(row, 5, actionsWidget);
-
-        for (int col = 0; col < 5; ++col) {
-            if (QTableWidgetItem* item = roomTable->item(row, col)) {
-                item->setBackground(QColor(255, 255, 200));
-            }
-        }
+        addRoomRowToTable(room, QColor(255, 255, 200));
     }
 }
 
@@ -1038,42 +958,7 @@ void MainWindow::onDisplayOccupiedRooms() {
     auto occupiedRooms = hotelSystem->findRoomsByStatus(RoomStatus::OCCUPIED);
 
     for (const Room* room : occupiedRooms) {
-        int row = roomTable->rowCount();
-        roomTable->insertRow(row);
-        roomTable->setVerticalHeaderItem(row, new QTableWidgetItem(QString::number(room->getRoomNumber())));
-
-        QTableWidgetItem* item0 = new QTableWidgetItem(getRoomTypeString(room));
-        item0->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        item0->setToolTip(getRoomTypeString(room));
-        roomTable->setItem(row, 0, item0);
-        
-        QTableWidgetItem* item1 = new QTableWidgetItem(getStatusString(room->getStatus()));
-        item1->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        roomTable->setItem(row, 1, item1);
-        
-        const Guest* guest = room->getGuest();
-        QString guestName = guest ? QString::fromStdString(guest->toShortString()) : "-";
-        QTableWidgetItem* item2 = new QTableWidgetItem(guestName);
-        item2->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        item2->setToolTip(guestName);
-        roomTable->setItem(row, 2, item2);
-        
-        QTableWidgetItem* item3 = new QTableWidgetItem("$" + QString::number(static_cast<int>(room->getPricePerDay())));
-        item3->setTextAlignment(Qt::AlignCenter);
-        roomTable->setItem(row, 3, item3);
-        
-        QTableWidgetItem* item4 = new QTableWidgetItem(QString::number(room->getBedCount()));
-        item4->setTextAlignment(Qt::AlignCenter);
-        roomTable->setItem(row, 4, item4);
-
-        QWidget* actionsWidget = createActionsWidget(room);
-        roomTable->setCellWidget(row, 5, actionsWidget);
-
-        for (int col = 0; col < 5; ++col) {
-            if (QTableWidgetItem* item = roomTable->item(row, col)) {
-                item->setBackground(QColor(255, 200, 200));
-            }
-        }
+        addRoomRowToTable(room, QColor(255, 200, 200));
     }
 }
 

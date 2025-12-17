@@ -444,16 +444,23 @@ void HotelSystem::loadFromFile(const std::string& filename) {
             }
         };
 
-        if (roomType == "Standard") {
-            if (!std::getline(file, line) || line.empty()) {
-                throw FileException("Failed to read beds for Standard room " + std::to_string(number));
-            }
-            int beds = std::stoi(line);
-            
+        auto readBool = [&](const std::string& fieldName, const std::string& roomTypeName) -> bool {
             if (!std::getline(file, line)) {
-                throw FileException("Failed to read room data for Standard room " + std::to_string(number));
+                throw FileException("Failed to read " + fieldName + " for " + roomTypeName + " room " + std::to_string(number));
             }
-            bool wifi = (line == "1" || line == "true");
+            return (line == "1" || line == "true");
+        };
+
+        auto readInt = [&](const std::string& fieldName, const std::string& roomTypeName) -> int {
+            if (!std::getline(file, line) || line.empty()) {
+                throw FileException("Failed to read " + fieldName + " for " + roomTypeName + " room " + std::to_string(number));
+            }
+            return std::stoi(line);
+        };
+
+        if (roomType == "Standard") {
+            int beds = readInt("beds", "Standard");
+            bool wifi = readBool("wifi", "Standard");
             
             try {
                 auto room = std::make_unique<StandardRoom>(number, price, beds, wifi);
@@ -464,25 +471,10 @@ void HotelSystem::loadFromFile(const std::string& filename) {
             }
         }
         else if (roomType == "Deluxe") {
-            if (!std::getline(file, line) || line.empty()) {
-                throw FileException("Failed to read beds for Deluxe room " + std::to_string(number));
-            }
-            int beds = std::stoi(line);
-            
-            if (!std::getline(file, line)) {
-                throw FileException("Failed to read room data for Deluxe room " + std::to_string(number));
-            }
-            bool wifi = (line == "1" || line == "true");
-            
-            if (!std::getline(file, line)) {
-                throw FileException("Failed to read miniBar for Deluxe room " + std::to_string(number));
-            }
-            bool miniBar = (line == "1" || line == "true");
-            
-            if (!std::getline(file, line)) {
-                throw FileException("Failed to read balcony for Deluxe room " + std::to_string(number));
-            }
-            bool balcony = (line == "1" || line == "true");
+            int beds = readInt("beds", "Deluxe");
+            bool wifi = readBool("wifi", "Deluxe");
+            bool miniBar = readBool("miniBar", "Deluxe");
+            bool balcony = readBool("balcony", "Deluxe");
             
             try {
                 auto room = std::make_unique<DeluxeRoom>(number, price, beds, wifi, miniBar, balcony);
@@ -493,30 +485,11 @@ void HotelSystem::loadFromFile(const std::string& filename) {
             }
         }
         else if (roomType == "Suite") {
-            if (!std::getline(file, line) || line.empty()) {
-                throw FileException("Failed to read beds for Suite room " + std::to_string(number));
-            }
-            int beds = std::stoi(line);
-            
-            if (!std::getline(file, line)) {
-                throw FileException("Failed to read room data for Suite room " + std::to_string(number));
-            }
-            bool wifi = (line == "1" || line == "true");
-            
-            if (!std::getline(file, line)) {
-                throw FileException("Failed to read miniBar for Suite room " + std::to_string(number));
-            }
-            bool miniBar = (line == "1" || line == "true");
-            
-            if (!std::getline(file, line)) {
-                throw FileException("Failed to read balcony for Suite room " + std::to_string(number));
-            }
-            bool balcony = (line == "1" || line == "true");
-            
-            if (!std::getline(file, line)) {
-                throw FileException("Failed to read jacuzzi for Suite room " + std::to_string(number));
-            }
-            bool jacuzzi = (line == "1" || line == "true");
+            int beds = readInt("beds", "Suite");
+            bool wifi = readBool("wifi", "Suite");
+            bool miniBar = readBool("miniBar", "Suite");
+            bool balcony = readBool("balcony", "Suite");
+            bool jacuzzi = readBool("jacuzzi", "Suite");
             
             try {
                 auto room = std::make_unique<SuiteRoom>(number, price, beds, wifi, miniBar, balcony, jacuzzi);

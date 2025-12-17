@@ -1,6 +1,7 @@
 #include "C:/Users/User/Desktop/HIS/include/RoomSearchDialog.h"
 #include "C:/Users/User/Desktop/HIS/include/DeluxeRoom.h"
 #include "C:/Users/User/Desktop/HIS/include/SuiteRoom.h"
+#include "C:/Users/User/Desktop/HIS/include/RoomUtils.h"
 #include <C:/Qt/6.10.1/msvc2022_64/include/QtWidgets/QHeaderView>
 #include <C:/Qt/6.10.1/msvc2022_64/include/QtGui/QColor>
 
@@ -409,59 +410,10 @@ bool RoomSearchDialog::matchesSearchCriteria(const Room* room) const {
 }
 
 QString RoomSearchDialog::getStatusString(RoomStatus status) {
-    switch (status) {
-    case RoomStatus::AVAILABLE:
-        return "Доступен";
-    case RoomStatus::BOOKED:
-        return "Забронирован";
-    case RoomStatus::OCCUPIED:
-        return "Занят";
-    default:
-        return "Неизвестно";
-    }
+    return QString::fromStdString(RoomUtils::getStatusString(status));
 }
 
 QString RoomSearchDialog::getRoomTypeString(const Room* room) {
-    if (!room) return "Неизвестно";
-    
-    int beds = room->getBedCount();
-    
-    bool hasMiniBar = false;
-    bool hasBalcony = false;
-    bool hasJacuzzi = false;
-    
-    if (auto dr = dynamic_cast<const DeluxeRoom*>(room)) {
-        hasMiniBar = dr->getHasMiniBar();
-        hasBalcony = dr->getHasBalcony();
-    }
-    
-    if (auto sr = dynamic_cast<const SuiteRoom*>(room)) {
-        hasMiniBar = sr->getHasMiniBar();
-        hasBalcony = sr->getHasBalcony();
-        hasJacuzzi = sr->getHasJacuzzi();
-    }
-    
-    if (beds == 4) {
-        return "8-местный";
-    } else if (beds == 3) {
-        return "6-местный";
-    } else if (beds == 2 && !hasMiniBar && !hasBalcony) {
-        return "4-местный женский";
-    } else if (beds == 1 && !hasMiniBar && !hasBalcony) {
-        return "Твин Джуниор";
-    } else if (beds == 1 && hasMiniBar && hasBalcony && !hasJacuzzi) {
-        double price = room->getPricePerDay();
-        if (price <= 25) {
-            return "Двухместный Эконом";
-        } else if (price <= 28) {
-            return "Loft Double";
-        } else {
-            return "Стандартный Дабл";
-        }
-    } else if (beds == 2 && hasMiniBar && hasBalcony && hasJacuzzi) {
-        return "Семейный";
-    }
-    
-    return QString::fromStdString(room->getRoomType());
+    return QString::fromStdString(RoomUtils::getRoomTypeString(room));
 }
 
