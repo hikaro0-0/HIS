@@ -21,9 +21,7 @@ static QString buildSmallButtonStyle(const QString& normalColor, const QString& 
     ).arg(normalColor, hoverColor, pressedColor);
 }
 
-static QString buildButtonStyle(const QString& normalColor, const QString& hoverColor, const QString& pressedColor,
-                                const QString& fontSize, const QString& padding, const QString& borderRadius,
-                                const QString& minWidth = "", const QString& minHeight = "") {
+static QString buildButtonStyle(const ButtonStyleParams& params) {
     QString style = QString(
         "QPushButton {"
         "    background-color: %1;"
@@ -33,13 +31,13 @@ static QString buildButtonStyle(const QString& normalColor, const QString& hover
         "    padding: %3;"
         "    border: none;"
         "    border-radius: %4;"
-    ).arg(normalColor, fontSize, padding, borderRadius);
+    ).arg(params.normalColor, params.fontSize, params.padding, params.borderRadius);
     
-    if (!minWidth.isEmpty()) {
-        style += QString("    min-width: %1;").arg(minWidth);
+    if (!params.minWidth.isEmpty()) {
+        style += QString("    min-width: %1;").arg(params.minWidth);
     }
-    if (!minHeight.isEmpty()) {
-        style += QString("    min-height: %1;").arg(minHeight);
+    if (!params.minHeight.isEmpty()) {
+        style += QString("    min-height: %1;").arg(params.minHeight);
     }
     
     style += QString(
@@ -50,7 +48,7 @@ static QString buildButtonStyle(const QString& normalColor, const QString& hover
         "QPushButton:pressed {"
         "    background-color: %2;"
         "}"
-    ).arg(hoverColor, pressedColor);
+    ).arg(params.hoverColor, params.pressedColor);
     
     return style;
 }
@@ -88,11 +86,11 @@ void UIHelpers::showNotification(QWidget* parent, const QString& message, bool i
 }
 
 QString UIHelpers::getGreenButtonStyle(const QString& fontSize, const QString& padding) {
-    return buildButtonStyle("#27ae60", "#229954", "#1e8449", fontSize, padding, "6px", "150px", "35px");
+    return buildButtonStyle(ButtonStyleParams("#27ae60", "#229954", "#1e8449", fontSize, padding, "6px", "150px", "35px"));
 }
 
 QString UIHelpers::getRedButtonStyle(const QString& fontSize, const QString& padding) {
-    return buildButtonStyle("#e74c3c", "#c0392b", "#a93226", fontSize, padding, "4px", "90px");
+    return buildButtonStyle(ButtonStyleParams("#e74c3c", "#c0392b", "#a93226", fontSize, padding, "4px", "90px"));
 }
 
 QString UIHelpers::getGreenSmallButtonStyle() {
@@ -108,7 +106,7 @@ QString UIHelpers::getBlueSmallButtonStyle() {
 }
 
 QString UIHelpers::getBlueButtonStyle(const QString& fontSize, const QString& padding, const QString& minWidth) {
-    return buildButtonStyle("#3498db", "#2980b9", "#21618c", fontSize, padding, "6px", minWidth);
+    return buildButtonStyle(ButtonStyleParams("#3498db", "#2980b9", "#21618c", fontSize, padding, "6px", minWidth));
 }
 
 QString UIHelpers::getOrangeSmallButtonStyle() {
@@ -120,7 +118,7 @@ QString UIHelpers::getGraySmallButtonStyle() {
 }
 
 QString UIHelpers::getGrayButtonStyle(const QString& fontSize, const QString& padding) {
-    return buildButtonStyle("#95a5a6", "#7f8c8d", "#6c7a7b", fontSize, padding, "4px", "90px");
+    return buildButtonStyle(ButtonStyleParams("#95a5a6", "#7f8c8d", "#6c7a7b", fontSize, padding, "4px", "90px"));
 }
 
 QString UIHelpers::getGroupBoxStyle() {
