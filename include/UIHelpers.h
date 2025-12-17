@@ -12,6 +12,7 @@ public:
     static QString getRedButtonStyle(const QString& fontSize = "9pt", const QString& padding = "6px 14px");
     static QString getRedSmallButtonStyle();
     static QString getBlueSmallButtonStyle();
+    static QString getBlueButtonStyle(const QString& fontSize = "11pt", const QString& padding = "10px 20px", const QString& minWidth = "150px");
     static QString getOrangeSmallButtonStyle();
     static QString getGrayButtonStyle(const QString& fontSize = "9pt", const QString& padding = "6px 14px");
     static QString getGraySmallButtonStyle();

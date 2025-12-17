@@ -21,6 +21,40 @@ static QString buildSmallButtonStyle(const QString& normalColor, const QString& 
     ).arg(normalColor, hoverColor, pressedColor);
 }
 
+static QString buildButtonStyle(const QString& normalColor, const QString& hoverColor, const QString& pressedColor,
+                                const QString& fontSize, const QString& padding, const QString& borderRadius,
+                                const QString& minWidth = "", const QString& minHeight = "") {
+    QString style = QString(
+        "QPushButton {"
+        "    background-color: %1;"
+        "    color: white;"
+        "    font-size: %2;"
+        "    font-weight: bold;"
+        "    padding: %3;"
+        "    border: none;"
+        "    border-radius: %4;"
+    ).arg(normalColor, fontSize, padding, borderRadius);
+    
+    if (!minWidth.isEmpty()) {
+        style += QString("    min-width: %1;").arg(minWidth);
+    }
+    if (!minHeight.isEmpty()) {
+        style += QString("    min-height: %1;").arg(minHeight);
+    }
+    
+    style += QString(
+        "}"
+        "QPushButton:hover {"
+        "    background-color: %1;"
+        "}"
+        "QPushButton:pressed {"
+        "    background-color: %2;"
+        "}"
+    ).arg(hoverColor, pressedColor);
+    
+    return style;
+}
+
 void UIHelpers::showNotification(QWidget* parent, const QString& message, bool isError, int timeoutMs) {
     QLabel* notification = new QLabel(message, parent);
     QString borderColor = isError ? "#e74c3c" : "#27ae60";
@@ -54,46 +88,11 @@ void UIHelpers::showNotification(QWidget* parent, const QString& message, bool i
 }
 
 QString UIHelpers::getGreenButtonStyle(const QString& fontSize, const QString& padding) {
-    return QString(
-        "QPushButton {"
-        "    background-color: #27ae60;"
-        "    color: white;"
-        "    font-size: %1;"
-        "    font-weight: bold;"
-        "    padding: %2;"
-        "    border: none;"
-        "    border-radius: 6px;"
-        "    min-width: 150px;"
-        "    min-height: 35px;"
-        "}"
-        "QPushButton:hover {"
-        "    background-color: #229954;"
-        "}"
-        "QPushButton:pressed {"
-        "    background-color: #1e8449;"
-        "}"
-    ).arg(fontSize, padding);
+    return buildButtonStyle("#27ae60", "#229954", "#1e8449", fontSize, padding, "6px", "150px", "35px");
 }
 
 QString UIHelpers::getRedButtonStyle(const QString& fontSize, const QString& padding) {
-    return QString(
-        "QPushButton {"
-        "    background-color: #e74c3c;"
-        "    color: white;"
-        "    font-weight: bold;"
-        "    font-size: %1;"
-        "    padding: %2;"
-        "    border: none;"
-        "    border-radius: 4px;"
-        "    min-width: 90px;"
-        "}"
-        "QPushButton:hover {"
-        "    background-color: #c0392b;"
-        "}"
-        "QPushButton:pressed {"
-        "    background-color: #a93226;"
-        "}"
-    ).arg(fontSize, padding);
+    return buildButtonStyle("#e74c3c", "#c0392b", "#a93226", fontSize, padding, "4px", "90px");
 }
 
 QString UIHelpers::getGreenSmallButtonStyle() {
@@ -108,6 +107,10 @@ QString UIHelpers::getBlueSmallButtonStyle() {
     return buildSmallButtonStyle("#3498db", "#2980b9", "#21618c");
 }
 
+QString UIHelpers::getBlueButtonStyle(const QString& fontSize, const QString& padding, const QString& minWidth) {
+    return buildButtonStyle("#3498db", "#2980b9", "#21618c", fontSize, padding, "6px", minWidth);
+}
+
 QString UIHelpers::getOrangeSmallButtonStyle() {
     return buildSmallButtonStyle("#f39c12", "#e67e22", "#d68910");
 }
@@ -117,24 +120,7 @@ QString UIHelpers::getGraySmallButtonStyle() {
 }
 
 QString UIHelpers::getGrayButtonStyle(const QString& fontSize, const QString& padding) {
-    return QString(
-        "QPushButton {"
-        "    background-color: #95a5a6;"
-        "    color: white;"
-        "    font-size: %1;"
-        "    font-weight: bold;"
-        "    padding: %2;"
-        "    border: none;"
-        "    border-radius: 4px;"
-        "    min-width: 90px;"
-        "}"
-        "QPushButton:hover {"
-        "    background-color: #7f8c8d;"
-        "}"
-        "QPushButton:pressed {"
-        "    background-color: #6c7a7b;"
-        "}"
-    ).arg(fontSize, padding);
+    return buildButtonStyle("#95a5a6", "#7f8c8d", "#6c7a7b", fontSize, padding, "4px", "90px");
 }
 
 QString UIHelpers::getGroupBoxStyle() {

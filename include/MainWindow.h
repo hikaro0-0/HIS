@@ -55,6 +55,7 @@ private:
     int getSelectedRoomNumber() const;
     QWidget* createActionsWidget(const Room* room);
     void addRoomRowToTable(const Room* room, const QColor& backgroundColor);
+    void selectRoomInTableAndExecute(const Room* room, std::function<void()> action);
 
     HotelSystem* hotelSystem;
     bool ownsHotelSystem;

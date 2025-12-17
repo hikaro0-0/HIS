@@ -7,6 +7,7 @@
 #include "C:/Users/User/Desktop/HIS/include/RoomSearchDialog.h"
 #include "C:/Users/User/Desktop/HIS/include/RoomUtils.h"
 #include "C:/Users/User/Desktop/HIS/include/UIHelpers.h"
+#include <functional>
 #include <C:/Qt/6.10.1/msvc2022_64/include/QtWidgets/QHeaderView>
 #include <C:/Qt/6.10.1/msvc2022_64/include/QtWidgets/QFileDialog>
 #include <C:/Qt/6.10.1/msvc2022_64/include/QtWidgets/QMessageBox>
@@ -211,24 +212,7 @@ void MainWindow::setupUI() {
     rightLayout->addWidget(statsGroup);
 
     QPushButton* searchButton = new QPushButton("Поиск комнаты", this);
-    searchButton->setStyleSheet(
-        "QPushButton {"
-        "    background-color: #3498db;"
-        "    color: white;"
-        "    font-size: 11pt;"
-        "    font-weight: bold;"
-        "    padding: 10px 20px;"
-        "    border: none;"
-        "    border-radius: 6px;"
-        "    min-width: 150px;"
-        "}"
-        "QPushButton:hover {"
-        "    background-color: #2980b9;"
-        "}"
-        "QPushButton:pressed {"
-        "    background-color: #21618c;"
-        "}"
-    );
+    searchButton->setStyleSheet(UIHelpers::getBlueButtonStyle());
     searchButton->setCursor(Qt::PointingHandCursor);
     connect(searchButton, &QPushButton::clicked, this, &MainWindow::onSearchRooms);
     rightLayout->addWidget(searchButton);
@@ -244,6 +228,18 @@ void MainWindow::setupUI() {
 
     mainLayout->addLayout(leftLayout, 2);
     mainLayout->addLayout(rightLayout, 1);
+}
+
+void MainWindow::selectRoomInTableAndExecute(const Room* room, std::function<void()> action) {
+    if (!room) return;
+    for (int i = 0; i < roomTable->rowCount(); ++i) {
+        QTableWidgetItem* typeItem = roomTable->item(i, 0);
+        if (typeItem && typeItem->text() == getRoomTypeString(room)) {
+            roomTable->selectRow(i);
+            action();
+            break;
+        }
+    }
 }
 
 void MainWindow::addRoomRowToTable(const Room* room, const QColor& backgroundColor) {
@@ -311,16 +307,7 @@ QWidget* MainWindow::createActionsWidget(const Room* room) {
         bookBtn->setCursor(Qt::PointingHandCursor);
         connect(bookBtn, &QPushButton::clicked, [this, roomNumber]() {
             const Room* room = hotelSystem->findRoom(roomNumber);
-            if (room) {
-            for (int i = 0; i < roomTable->rowCount(); ++i) {
-                    QTableWidgetItem* typeItem = roomTable->item(i, 0);
-                    if (typeItem && typeItem->text() == getRoomTypeString(room)) {
-                    roomTable->selectRow(i);
-                    onBookRoom();
-                    break;
-                    }
-                }
-            }
+            selectRoomInTableAndExecute(room, [this]() { onBookRoom(); });
         });
         actionsLayout->addWidget(bookBtn);
         break;
@@ -331,16 +318,7 @@ QWidget* MainWindow::createActionsWidget(const Room* room) {
         checkInBtn->setCursor(Qt::PointingHandCursor);
         connect(checkInBtn, &QPushButton::clicked, [this, roomNumber]() {
             const Room* room = hotelSystem->findRoom(roomNumber);
-            if (room) {
-            for (int i = 0; i < roomTable->rowCount(); ++i) {
-                    QTableWidgetItem* typeItem = roomTable->item(i, 0);
-                    if (typeItem && typeItem->text() == getRoomTypeString(room)) {
-                    roomTable->selectRow(i);
-                    onCheckIn();
-                    break;
-                    }
-                }
-            }
+            selectRoomInTableAndExecute(room, [this]() { onCheckIn(); });
         });
         actionsLayout->addWidget(checkInBtn);
         
@@ -349,52 +327,18 @@ QWidget* MainWindow::createActionsWidget(const Room* room) {
         cancelBtn->setCursor(Qt::PointingHandCursor);
         connect(cancelBtn, &QPushButton::clicked, [this, roomNumber]() {
             const Room* room = hotelSystem->findRoom(roomNumber);
-            if (room) {
-            for (int i = 0; i < roomTable->rowCount(); ++i) {
-                    QTableWidgetItem* typeItem = roomTable->item(i, 0);
-                    if (typeItem && typeItem->text() == getRoomTypeString(room)) {
-                    roomTable->selectRow(i);
-                    onCancelBooking();
-                    break;
-                    }
-                }
-            }
+            selectRoomInTableAndExecute(room, [this]() { onCancelBooking(); });
         });
         actionsLayout->addWidget(cancelBtn);
         break;
     }
     case RoomStatus::OCCUPIED: {
         QPushButton* checkOutBtn = new QPushButton("Выселить", actionsWidget);
-        checkOutBtn->setStyleSheet(
-            "QPushButton {"
-            "    background-color: #f39c12;"
-            "    color: white;"
-            "    font-size: 8pt;"
-            "    font-weight: bold;"
-            "    padding: 4px 10px;"
-            "    border: none;"
-            "    border-radius: 3px;"
-            "}"
-            "QPushButton:hover {"
-            "    background-color: #e67e22;"
-            "}"
-            "QPushButton:pressed {"
-            "    background-color: #d68910;"
-            "}"
-        );
+        checkOutBtn->setStyleSheet(UIHelpers::getOrangeSmallButtonStyle());
         checkOutBtn->setCursor(Qt::PointingHandCursor);
         connect(checkOutBtn, &QPushButton::clicked, [this, roomNumber]() {
             const Room* room = hotelSystem->findRoom(roomNumber);
-            if (room) {
-            for (int i = 0; i < roomTable->rowCount(); ++i) {
-                    QTableWidgetItem* typeItem = roomTable->item(i, 0);
-                    if (typeItem && typeItem->text() == getRoomTypeString(room)) {
-                    roomTable->selectRow(i);
-                    onCheckOut();
-                    break;
-                    }
-                }
-            }
+            selectRoomInTableAndExecute(room, [this]() { onCheckOut(); });
         });
         actionsLayout->addWidget(checkOutBtn);
         break;
