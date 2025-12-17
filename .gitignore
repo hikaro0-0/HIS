@@ -1,0 +1,14 @@
+# Ignore everything
+*
+
+# But don't ignore directories (so we can traverse them to find .cpp and .h files)
+!*/
+
+# Don't ignore .cpp files
+!*.cpp
+
+# Don't ignore .h files
+!*.h
+
+# Don't ignore .gitignore itself
+!.gitignore
