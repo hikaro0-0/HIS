@@ -191,11 +191,8 @@ void MainWindow::setupUI() {
 
     leftLayout->addWidget(roomGroup);
     
-    clearButton = new QPushButton("Очистить данные", this);
-    clearButton->setStyleSheet(UIHelpers::getRedButtonStyle());
-    clearButton->setCursor(Qt::PointingHandCursor);
-    connect(clearButton, &QPushButton::clicked, this, &MainWindow::onClearData);
-    
+    clearButton = createStyledButton(this, "Очистить данные", UIHelpers::getRedButtonStyle(), 
+        [this]() { onClearData(); });
     leftLayout->addWidget(clearButton, 0, Qt::AlignLeft);
 
     QVBoxLayout* rightLayout = new QVBoxLayout();
@@ -211,19 +208,14 @@ void MainWindow::setupUI() {
     statsLayout->addWidget(statisticsLabel);
     rightLayout->addWidget(statsGroup);
 
-    QPushButton* searchButton = new QPushButton("Поиск комнаты", this);
-    searchButton->setStyleSheet(UIHelpers::getBlueButtonStyle());
-    searchButton->setCursor(Qt::PointingHandCursor);
-    connect(searchButton, &QPushButton::clicked, this, &MainWindow::onSearchRooms);
+    QPushButton* searchButton = createStyledButton(this, "Поиск комнаты", UIHelpers::getBlueButtonStyle(),
+        [this]() { onSearchRooms(); });
     rightLayout->addWidget(searchButton);
     
     rightLayout->addStretch();
     
-    bookRoomButton = new QPushButton("Забронировать номер", this);
-    bookRoomButton->setStyleSheet(UIHelpers::getGreenButtonStyle());
-    bookRoomButton->setCursor(Qt::PointingHandCursor);
-    connect(bookRoomButton, &QPushButton::clicked, this, &MainWindow::onBookRoom);
-    
+    bookRoomButton = createStyledButton(this, "Забронировать номер", UIHelpers::getGreenButtonStyle(),
+        [this]() { onBookRoom(); });
     rightLayout->addWidget(bookRoomButton, 0, Qt::AlignRight);
 
     mainLayout->addLayout(leftLayout, 2);
@@ -281,6 +273,14 @@ void MainWindow::addRoomRowToTable(const Room* room, const QColor& backgroundCol
     }
 }
 
+QPushButton* MainWindow::createStyledButton(QWidget* parent, const QString& text, const QString& style, std::function<void()> onClick) {
+    QPushButton* button = new QPushButton(text, parent);
+    button->setStyleSheet(style);
+    button->setCursor(Qt::PointingHandCursor);
+    connect(button, &QPushButton::clicked, onClick);
+    return button;
+}
+
 QWidget* MainWindow::createActionsWidget(const Room* room) {
     QWidget* actionsWidget = new QWidget();
     QHBoxLayout* actionsLayout = new QHBoxLayout(actionsWidget);
@@ -289,57 +289,47 @@ QWidget* MainWindow::createActionsWidget(const Room* room) {
 
     int roomNumber = room->getRoomNumber();
     
-    QPushButton* detailsBtn = new QPushButton("Детали", actionsWidget);
-    detailsBtn->setStyleSheet(UIHelpers::getGraySmallButtonStyle());
-        detailsBtn->setCursor(Qt::PointingHandCursor);
-    connect(detailsBtn, &QPushButton::clicked, [this, roomNumber]() {
-        const Room* room = hotelSystem->findRoom(roomNumber);
-        if (room) {
-            showRoomDetailsDialog(room);
-        }
-    });
+    QPushButton* detailsBtn = createStyledButton(actionsWidget, "Детали", UIHelpers::getGraySmallButtonStyle(), 
+        [this, roomNumber]() {
+            const Room* room = hotelSystem->findRoom(roomNumber);
+            if (room) {
+                showRoomDetailsDialog(room);
+            }
+        });
     actionsLayout->addWidget(detailsBtn);
     
     switch (room->getStatus()) {
     case RoomStatus::AVAILABLE: {
-        QPushButton* bookBtn = new QPushButton("Забронировать", actionsWidget);
-        bookBtn->setStyleSheet(UIHelpers::getGreenSmallButtonStyle());
-        bookBtn->setCursor(Qt::PointingHandCursor);
-        connect(bookBtn, &QPushButton::clicked, [this, roomNumber]() {
-            const Room* room = hotelSystem->findRoom(roomNumber);
-            selectRoomInTableAndExecute(room, [this]() { onBookRoom(); });
-        });
+        QPushButton* bookBtn = createStyledButton(actionsWidget, "Забронировать", UIHelpers::getGreenSmallButtonStyle(),
+            [this, roomNumber]() {
+                const Room* room = hotelSystem->findRoom(roomNumber);
+                selectRoomInTableAndExecute(room, [this]() { onBookRoom(); });
+            });
         actionsLayout->addWidget(bookBtn);
         break;
     }
     case RoomStatus::BOOKED: {
-        QPushButton* checkInBtn = new QPushButton("Заселить", actionsWidget);
-        checkInBtn->setStyleSheet(UIHelpers::getBlueSmallButtonStyle());
-        checkInBtn->setCursor(Qt::PointingHandCursor);
-        connect(checkInBtn, &QPushButton::clicked, [this, roomNumber]() {
-            const Room* room = hotelSystem->findRoom(roomNumber);
-            selectRoomInTableAndExecute(room, [this]() { onCheckIn(); });
-        });
+        QPushButton* checkInBtn = createStyledButton(actionsWidget, "Заселить", UIHelpers::getBlueSmallButtonStyle(),
+            [this, roomNumber]() {
+                const Room* room = hotelSystem->findRoom(roomNumber);
+                selectRoomInTableAndExecute(room, [this]() { onCheckIn(); });
+            });
         actionsLayout->addWidget(checkInBtn);
         
-        QPushButton* cancelBtn = new QPushButton("Отменить", actionsWidget);
-        cancelBtn->setStyleSheet(UIHelpers::getRedSmallButtonStyle());
-        cancelBtn->setCursor(Qt::PointingHandCursor);
-        connect(cancelBtn, &QPushButton::clicked, [this, roomNumber]() {
-            const Room* room = hotelSystem->findRoom(roomNumber);
-            selectRoomInTableAndExecute(room, [this]() { onCancelBooking(); });
-        });
+        QPushButton* cancelBtn = createStyledButton(actionsWidget, "Отменить", UIHelpers::getRedSmallButtonStyle(),
+            [this, roomNumber]() {
+                const Room* room = hotelSystem->findRoom(roomNumber);
+                selectRoomInTableAndExecute(room, [this]() { onCancelBooking(); });
+            });
         actionsLayout->addWidget(cancelBtn);
         break;
     }
     case RoomStatus::OCCUPIED: {
-        QPushButton* checkOutBtn = new QPushButton("Выселить", actionsWidget);
-        checkOutBtn->setStyleSheet(UIHelpers::getOrangeSmallButtonStyle());
-        checkOutBtn->setCursor(Qt::PointingHandCursor);
-        connect(checkOutBtn, &QPushButton::clicked, [this, roomNumber]() {
-            const Room* room = hotelSystem->findRoom(roomNumber);
-            selectRoomInTableAndExecute(room, [this]() { onCheckOut(); });
-        });
+        QPushButton* checkOutBtn = createStyledButton(actionsWidget, "Выселить", UIHelpers::getOrangeSmallButtonStyle(),
+            [this, roomNumber]() {
+                const Room* room = hotelSystem->findRoom(roomNumber);
+                selectRoomInTableAndExecute(room, [this]() { onCheckOut(); });
+            });
         actionsLayout->addWidget(checkOutBtn);
         break;
     }

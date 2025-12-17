@@ -56,6 +56,7 @@ private:
     QWidget* createActionsWidget(const Room* room);
     void addRoomRowToTable(const Room* room, const QColor& backgroundColor);
     void selectRoomInTableAndExecute(const Room* room, std::function<void()> action);
+    QPushButton* createStyledButton(QWidget* parent, const QString& text, const QString& style, std::function<void()> onClick);
 
     HotelSystem* hotelSystem;
     bool ownsHotelSystem;

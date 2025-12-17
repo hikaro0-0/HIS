@@ -5,6 +5,18 @@ namespace {
     const QString SMALL_BUTTON_FONT_SIZE = "8pt";
     const QString SMALL_BUTTON_PADDING = "4px 10px";
     const QString SMALL_BUTTON_BORDER_RADIUS = "3px";
+    
+    struct ButtonColorScheme {
+        QString normal;
+        QString hover;
+        QString pressed;
+    };
+    
+    const ButtonColorScheme GREEN_SCHEME = {"#27ae60", "#229954", "#1e8449"};
+    const ButtonColorScheme RED_SCHEME = {"#e74c3c", "#c0392b", "#a93226"};
+    const ButtonColorScheme BLUE_SCHEME = {"#3498db", "#2980b9", "#21618c"};
+    const ButtonColorScheme ORANGE_SCHEME = {"#f39c12", "#e67e22", "#d68910"};
+    const ButtonColorScheme GRAY_SCHEME = {"#95a5a6", "#7f8c8d", "#6c7a7b"};
 }
 
 static QString buildButtonStyle(const ButtonStyleParams& params) {
@@ -37,6 +49,13 @@ static QString buildButtonStyle(const ButtonStyleParams& params) {
     ).arg(params.hoverColor, params.pressedColor);
     
     return style;
+}
+
+namespace {
+    static QString buildSmallButtonStyle(const ButtonColorScheme& scheme) {
+        return buildButtonStyle(ButtonStyleParams(scheme.normal, scheme.hover, scheme.pressed, 
+                                                   SMALL_BUTTON_FONT_SIZE, SMALL_BUTTON_PADDING, SMALL_BUTTON_BORDER_RADIUS));
+    }
 }
 
 void UIHelpers::showNotification(QWidget* parent, const QString& message, bool isError, int timeoutMs) {
@@ -72,39 +91,39 @@ void UIHelpers::showNotification(QWidget* parent, const QString& message, bool i
 }
 
 QString UIHelpers::getGreenButtonStyle(const QString& fontSize, const QString& padding) {
-    return buildButtonStyle(ButtonStyleParams("#27ae60", "#229954", "#1e8449", fontSize, padding, "6px", "150px", "35px"));
+    return buildButtonStyle(ButtonStyleParams(GREEN_SCHEME.normal, GREEN_SCHEME.hover, GREEN_SCHEME.pressed, fontSize, padding, "6px", "150px", "35px"));
 }
 
 QString UIHelpers::getRedButtonStyle(const QString& fontSize, const QString& padding) {
-    return buildButtonStyle(ButtonStyleParams("#e74c3c", "#c0392b", "#a93226", fontSize, padding, "4px", "90px"));
+    return buildButtonStyle(ButtonStyleParams(RED_SCHEME.normal, RED_SCHEME.hover, RED_SCHEME.pressed, fontSize, padding, "4px", "90px"));
 }
 
 QString UIHelpers::getGreenSmallButtonStyle() {
-    return buildButtonStyle(ButtonStyleParams("#27ae60", "#229954", "#1e8449", SMALL_BUTTON_FONT_SIZE, SMALL_BUTTON_PADDING, SMALL_BUTTON_BORDER_RADIUS));
+    return buildSmallButtonStyle(GREEN_SCHEME);
 }
 
 QString UIHelpers::getRedSmallButtonStyle() {
-    return buildButtonStyle(ButtonStyleParams("#e74c3c", "#c0392b", "#a93226", SMALL_BUTTON_FONT_SIZE, SMALL_BUTTON_PADDING, SMALL_BUTTON_BORDER_RADIUS));
+    return buildSmallButtonStyle(RED_SCHEME);
 }
 
 QString UIHelpers::getBlueSmallButtonStyle() {
-    return buildButtonStyle(ButtonStyleParams("#3498db", "#2980b9", "#21618c", SMALL_BUTTON_FONT_SIZE, SMALL_BUTTON_PADDING, SMALL_BUTTON_BORDER_RADIUS));
+    return buildSmallButtonStyle(BLUE_SCHEME);
 }
 
 QString UIHelpers::getBlueButtonStyle(const QString& fontSize, const QString& padding, const QString& minWidth) {
-    return buildButtonStyle(ButtonStyleParams("#3498db", "#2980b9", "#21618c", fontSize, padding, "6px", minWidth));
+    return buildButtonStyle(ButtonStyleParams(BLUE_SCHEME.normal, BLUE_SCHEME.hover, BLUE_SCHEME.pressed, fontSize, padding, "6px", minWidth));
 }
 
 QString UIHelpers::getOrangeSmallButtonStyle() {
-    return buildButtonStyle(ButtonStyleParams("#f39c12", "#e67e22", "#d68910", SMALL_BUTTON_FONT_SIZE, SMALL_BUTTON_PADDING, SMALL_BUTTON_BORDER_RADIUS));
+    return buildSmallButtonStyle(ORANGE_SCHEME);
 }
 
 QString UIHelpers::getGraySmallButtonStyle() {
-    return buildButtonStyle(ButtonStyleParams("#95a5a6", "#7f8c8d", "#6c7a7b", SMALL_BUTTON_FONT_SIZE, SMALL_BUTTON_PADDING, SMALL_BUTTON_BORDER_RADIUS));
+    return buildSmallButtonStyle(GRAY_SCHEME);
 }
 
 QString UIHelpers::getGrayButtonStyle(const QString& fontSize, const QString& padding) {
-    return buildButtonStyle(ButtonStyleParams("#95a5a6", "#7f8c8d", "#6c7a7b", fontSize, padding, "4px", "90px"));
+    return buildButtonStyle(ButtonStyleParams(GRAY_SCHEME.normal, GRAY_SCHEME.hover, GRAY_SCHEME.pressed, fontSize, padding, "4px", "90px"));
 }
 
 QString UIHelpers::getGroupBoxStyle() {
